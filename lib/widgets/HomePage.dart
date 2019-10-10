@@ -1,3 +1,4 @@
+import 'package:alarm_first_app/widgets/CreateForm.dart';
 import 'package:flutter/material.dart';
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
@@ -9,12 +10,9 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
 
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
+  void _onOpenCreateForm() {
+    Navigator.push(context, MaterialPageRoute(builder: (context) => CreateAlarmFrom()));
   }
 
   @override
@@ -24,23 +22,8 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
         backgroundColor: Color(0xFF00E676),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.display1,
-            ),
-          ],
-        ),
-      ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
+        onPressed: _onOpenCreateForm,
         child: Icon(Icons.add),
         backgroundColor: Color(0xFF00E676),
       ), // This trailing comma makes auto-formatting nicer for build methods.
