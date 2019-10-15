@@ -1,8 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:alarm_first_app/widgets/HomePage.dart';
 
-class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
+class MyApp extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() {
+    return _MyAppState();
+  }
+}
+
+class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -10,7 +16,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.greenAccent[50],
       ),
-      home: MyHomePage(title: 'Alarm App'),
+      home: MyHomePage(title: "Home"),
     );
   }
 }
