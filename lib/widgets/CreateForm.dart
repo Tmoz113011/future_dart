@@ -1,8 +1,27 @@
+import 'package:alarm_first_app/helpers/DBHelper.dart';
+import 'package:alarm_first_app/models/Schedule.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
+import 'package:flutter/cupertino.dart';
+import 'dart:async';
 
-class CreateAlarmForm extends StatelessWidget {
-  _handleSaveAlarm() {}
+import 'package:sqflite/sqflite.dart';
+
+class ScheduleForm extends StatefulWidget {
+  _ScheduleState createState() => _ScheduleState();
+}
+
+class _ScheduleState extends State<ScheduleForm> {
+  Schedule _schedule;
+
+  Future<void> createSchedule(Schedule schedule) async {
+    DBHelper database =
+        DBHelper(dbName: Schedule.dbName, createQuery: Schedule.onCreateQuery);
+    final Database db = await database.db;
+    if (schedule != null) {
+      db.insert(Schedule.tableName, schedule.toMap());
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -16,79 +35,27 @@ class CreateAlarmForm extends StatelessWidget {
           actions: <Widget>[
             IconButton(
               icon: Icon(Icons.check),
-              onPressed: _handleSaveAlarm(),
+              onPressed: () async {
+                await createSchedule(_schedule);
+                Navigator.pop(context);
+              },
             )
           ],
         ),
         body: Container(
-          constraints: BoxConstraints.expand(),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              Container(
-                width: MediaQuery.of(context).size.width / 3,
-                height: MediaQuery.of(context).size.height / 4,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    new IconButton(
-                      icon: new Icon(Icons.keyboard_arrow_up, size: 30.0),
-                      onPressed: null,
-                    ),
-                    new Text("1", style: new TextStyle(fontSize: 30.0)),
-                    new IconButton(
-                      onPressed: null,
-                      icon: new Icon(Icons.keyboard_arrow_down, size: 30.0),
-                    )
-                  ],
-                ),
-              ),
-              Container(
-                width: MediaQuery.of(context).size.width / 3,
-                height: MediaQuery.of(context).size.height / 4,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    new IconButton(
-                      icon: new Icon(Icons.keyboard_arrow_up, size: 30.0),
-                      onPressed: null,
-                    ),
-                    new Text("1", style: new TextStyle(fontSize: 30.0)),
-                    new IconButton(
-                      onPressed: null,
-                      icon: new Icon(Icons.keyboard_arrow_down, size: 30.0),
-                    )
-                  ],
-                ),
-              ),
-              Stack(alignment: AlignmentDirectional.topEnd, children: [
-                Container(
-                  width: MediaQuery.of(context).size.width / 3,
-                  height: MediaQuery.of(context).size.height / 4,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      new IconButton(
-                        icon: new Icon(Icons.keyboard_arrow_up, size: 30.0),
-                        onPressed: null,
-                      ),
-                      new Text("1", style: new TextStyle(fontSize: 30.0)),
-                      new IconButton(
-                        onPressed: null,
-                        icon: new Icon(Icons.keyboard_arrow_down, size: 30.0),
-                      )
-                    ],
-                  ),
-                ),
-                new IconButton(
-                  icon: Icon(Icons.alarm),
-                  onPressed: () {
-                    DatePicker.showTimePicker(context, currentTime: DateTime.now());
-                  },
-                )
-              ]),
-            ],
+          child: CupertinoTimerPicker(
+            mode: CupertinoTimerPickerMode.hms,
+            minuteInterval: 1,
+            secondInterval: 1,
+            onTimerDurationChanged: (Duration changedtimer) {
+              setState(() {
+                _schedule = Schedule(
+                    id: DateTime.now().toString(),
+                    duration: changedtimer.toString(),
+                    isOn: 1,
+                    isDelete: 0);
+              });
+            },
           ),
         ));
   }
