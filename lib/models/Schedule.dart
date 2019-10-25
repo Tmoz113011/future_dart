@@ -1,37 +1,45 @@
+import 'dart:convert';
+
+import 'package:flutter/material.dart';
+
 class Schedule {
   static final tableName = "schedules";
   static final dbName = "schedule.db";
-  final String id;
-  final String duration;
+  final int id;
+  final TimeOfDay time;
   final int isOn;
   final int isDelete;
-  static final String onCreateQuery = "CREATE TABLE schedules(id TEXT PRIMARY KEY, duration TEXT, isOn INTEGER, isDelete INTEGER)";
+  static final String onCreateQuery =
+      "CREATE TABLE schedules(id INTEGER PRIMARY KEY, time TEXT, isOn INTEGER DEFAULT 1, isDelete INTEGER DEFAULT 0)";
 
-  Schedule({this.id, this.duration, this.isOn, this.isDelete});
+  Schedule({this.id, this.time, this.isOn, this.isDelete});
 
   static Schedule defaultSchedule() {
-    return new Schedule(id: DateTime.now().toString(), duration: Duration().toString(), isOn: 1, isDelete: 0);
+    TimeOfDay time =
+        TimeOfDay(hour: DateTime.now().hour, minute: DateTime.now().minute);
+
+    return new Schedule(id: 0, time: time, isOn: 1, isDelete: 0);
   }
 
   set isOn(int value) {
     isOn = value;
   }
 
-  set duration(String val) {
-    duration = val;
+  set time(TimeOfDay val) {
+    time = val;
   }
 
   Map<String, dynamic> toMap() {
     return {
       'id': id,
-      'duration':  duration,
-      'isOn':  isOn,
+      'time': jsonEncode({'hour': time.hour, 'minute': time.minute}),
+      'isOn': isOn,
       'isDelete': isDelete
     };
   }
 
   @override
   String toString() {
-    return "Schedule($id, $duration, $isOn, $isDelete})";
+    return "Schedule($id, $time, $isOn, $isDelete})";
   }
 }

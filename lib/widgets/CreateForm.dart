@@ -11,7 +11,7 @@ class ScheduleForm extends StatefulWidget {
 }
 
 class _ScheduleState extends State<ScheduleForm> {
-  Schedule _schedule;
+  DateTime timeStamp = DateTime.now(); 
 
   Future<void> createSchedule(Schedule schedule) async {
     DBHelper database =
@@ -36,26 +36,22 @@ class _ScheduleState extends State<ScheduleForm> {
             IconButton(
               icon: Icon(Icons.check),
               onPressed: () async {
-                await createSchedule(_schedule);
+                Schedule schedule = Schedule(id: timeStamp.microsecondsSinceEpoch, time: TimeOfDay(hour: timeStamp.hour, minute: timeStamp.minute), isOn: 1, isDelete: 0);
+                await createSchedule(schedule);
                 Navigator.pop(context);
               },
             )
           ],
         ),
         body: Container(
-          child: CupertinoTimerPicker(
-            mode: CupertinoTimerPickerMode.hms,
-            minuteInterval: 1,
-            secondInterval: 1,
-            onTimerDurationChanged: (Duration changedtimer) {
+          child: CupertinoDatePicker(
+            mode: CupertinoDatePickerMode.time,
+            initialDateTime: timeStamp,
+            onDateTimeChanged: (DateTime time) {
               setState(() {
-                _schedule = Schedule(
-                    id: DateTime.now().toString(),
-                    duration: changedtimer.toString(),
-                    isOn: 1,
-                    isDelete: 0);
+                timeStamp = time;
               });
-            },
+            }, 
           ),
         ));
   }

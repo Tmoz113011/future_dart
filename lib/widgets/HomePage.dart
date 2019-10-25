@@ -1,6 +1,9 @@
+import 'dart:convert';
+
 import 'package:alarm_first_app/helpers/DBHelper.dart';
 import 'package:alarm_first_app/models/Schedule.dart';
 import 'package:alarm_first_app/widgets/CreateForm.dart';
+import 'package:alarm_first_app/widgets/ListSchedule.dart';
 import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -14,12 +17,12 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  List<Schedule> _schedules;
+  List<Schedule> _schedules = [];
 
   @override
   void initState() {
     super.initState();
-    setDefaultState();
+    setListAlarm();
   }
 
   void _onOpenCreateForm() {
@@ -27,8 +30,11 @@ class _MyHomePageState extends State<MyHomePage> {
         context, MaterialPageRoute(builder: (context) => ScheduleForm()));
   }
 
-  void setDefaultState() async {
-    _schedules = await getListSchedule();
+  void setListAlarm() async {
+    List<Schedule> schedules = await getListSchedule();
+    setState(()  {
+      _schedules = schedules;
+    });
   }
 
   Future<List<Schedule>> getListSchedule() async {
@@ -38,24 +44,34 @@ class _MyHomePageState extends State<MyHomePage> {
         .db;
 
     //Get all data
-    final List<Map<String, dynamic>> maps = await db.rawQuery("SELECT * FROM schedules WHERE isDelete=0");
-    return List.generate(maps.length, (key) {
-      return Schedule(
-          id: maps[key]['id'],
-          duration: maps[key]['duration'],
-          isOn: maps[key]['isOn'],
-          isDelete: maps[key]['isDelete']);
-    });
+    final List<Map<String, dynamic>> maps = await db.query(Schedule.tableName);
+    if (maps != null && maps != []) {
+      return List.generate(maps.length, (key) {
+        var time = jsonDecode(maps[key]['time']);
+        TimeOfDay timeStamp =
+            TimeOfDay(hour: time['hour'], minute: time['minute']);
+        return Schedule(
+            id: maps[key]['id'],
+            time: timeStamp,
+            isOn: maps[key]['isOn'],
+            isDelete: maps[key]['isDelete']);
+      });
+    } else {
+      return [];
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    print(_schedules.toString());
+    setListAlarm();
 
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
         backgroundColor: Colors.orangeAccent,
+      ),
+      body: Center(
+        child: ListSchedule(_schedules),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _onOpenCreateForm,
