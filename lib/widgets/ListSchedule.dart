@@ -3,21 +3,14 @@ import 'package:flutter/widgets.dart';
 
 import 'ScheduleCard.dart';
 
-class ListSchedule extends StatefulWidget {
-  List<Schedule> _schedules;
-  ListSchedule(this._schedules);
-  @override
-  State<StatefulWidget> createState() => _ListScheduleState(_schedules);
-}
-
-class _ListScheduleState extends State<ListSchedule> {
-  List<Schedule> _schedules;
-  _ListScheduleState(this._schedules);
+class ListSchedule extends StatelessWidget {
+  final List<Schedule> schedules;
+  ListSchedule({this.schedules});
 
   ListView _listAlarms(context) {
     return ListView.builder(
-      itemCount: _schedules.length,
-      itemBuilder: (context, i) => ScheduleCard(_schedules[i]),
+      itemCount: schedules.length,
+      itemBuilder: (context, i) => ScheduleCard(schedule: schedules[i]),
     );
   }
 

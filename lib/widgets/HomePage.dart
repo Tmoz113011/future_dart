@@ -17,8 +17,8 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  List<Schedule> _schedules = [];
-
+  List<Schedule> schedules = [];
+  
   @override
   void initState() {
     super.initState();
@@ -27,13 +27,13 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _onOpenCreateForm() {
     Navigator.push(
-        context, MaterialPageRoute(builder: (context) => ScheduleForm()));
+        context, MaterialPageRoute(builder: (context) => ScheduleForm(onUpdateList: this.setListAlarm)));
   }
 
   void setListAlarm() async {
-    List<Schedule> schedules = await getListSchedule();
+    List<Schedule> _schedules = await getListSchedule();
     setState(()  {
-      _schedules = schedules;
+      schedules = _schedules;
     });
   }
 
@@ -63,20 +63,18 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    setListAlarm();
-
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
-        backgroundColor: Colors.orangeAccent,
+        backgroundColor: Colors.greenAccent[50],
       ),
       body: Center(
-        child: ListSchedule(_schedules),
+        child: ListSchedule(schedules:schedules),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _onOpenCreateForm,
         child: Icon(Icons.add),
-        backgroundColor: Colors.orangeAccent,
+        backgroundColor: Colors.greenAccent[50],
       ),
     );
   }

@@ -8,10 +8,10 @@ import 'package:sqflite/sqlite_api.dart';
 class ScheduleCard extends StatefulWidget {
   final Schedule schedule;
 
-  ScheduleCard(this.schedule);
+  const ScheduleCard({Key key, this.schedule}) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => _ScheduleCardState(schedule);
+  _ScheduleCardState createState() => _ScheduleCardState(schedule);
 }
 
 class _ScheduleCardState extends State<ScheduleCard> {
@@ -25,18 +25,20 @@ class _ScheduleCardState extends State<ScheduleCard> {
     } else {
       isOn = 0;
     }
-    setState(() {
-      schedule.isOn = isOn;
-    });
+    schedule.isOn = isOn;
     await updateOnOffAlarm(schedule);
   }
 
-  Future<void> updateOnOffAlarm(Schedule schedule) async {
+  Future<void> updateOnOffAlarm(Schedule _schedule) async {
     DBHelper database =
         DBHelper(dbName: Schedule.dbName, createQuery: Schedule.onCreateQuery);
     final Database db = await database.db;
     if (schedule != null) {
-      db.update(Schedule.tableName, schedule.toMap(), where: "id = ?", whereArgs: [schedule.id]);
+      db.update(Schedule.tableName, _schedule.toMap(),
+          where: "id = ?", whereArgs: [_schedule.id]);
+      setState(() {
+        schedule = _schedule;
+      });
     }
   }
 
@@ -44,9 +46,12 @@ class _ScheduleCardState extends State<ScheduleCard> {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: null,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: <Widget>[timeText, alarmSwitch],
+      child: Container(
+        constraints: BoxConstraints.expand(height: 50),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: <Widget>[timeText, alarmSwitch],
+        ),
       ),
     );
   }

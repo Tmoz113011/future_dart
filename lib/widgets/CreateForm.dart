@@ -7,11 +7,15 @@ import 'dart:async';
 import 'package:sqflite/sqflite.dart';
 
 class ScheduleForm extends StatefulWidget {
-  _ScheduleState createState() => _ScheduleState();
+  VoidCallback onUpdateList;
+  ScheduleForm({this.onUpdateList});
+  _ScheduleState createState() => _ScheduleState(onUpdateList: onUpdateList);
 }
 
 class _ScheduleState extends State<ScheduleForm> {
-  DateTime timeStamp = DateTime.now(); 
+  DateTime timeStamp = DateTime.now();
+  final VoidCallback onUpdateList;
+  _ScheduleState({this.onUpdateList});
 
   Future<void> createSchedule(Schedule schedule) async {
     DBHelper database =
@@ -36,8 +40,14 @@ class _ScheduleState extends State<ScheduleForm> {
             IconButton(
               icon: Icon(Icons.check),
               onPressed: () async {
-                Schedule schedule = Schedule(id: timeStamp.microsecondsSinceEpoch, time: TimeOfDay(hour: timeStamp.hour, minute: timeStamp.minute), isOn: 1, isDelete: 0);
+                Schedule schedule = Schedule(
+                    id: timeStamp.microsecondsSinceEpoch,
+                    time: TimeOfDay(
+                        hour: timeStamp.hour, minute: timeStamp.minute),
+                    isOn: 1,
+                    isDelete: 0);
                 await createSchedule(schedule);
+                onUpdateList();
                 Navigator.pop(context);
               },
             )
@@ -51,7 +61,7 @@ class _ScheduleState extends State<ScheduleForm> {
               setState(() {
                 timeStamp = time;
               });
-            }, 
+            },
           ),
         ));
   }
