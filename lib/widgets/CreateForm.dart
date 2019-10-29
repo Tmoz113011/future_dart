@@ -7,7 +7,7 @@ import 'dart:async';
 import 'package:sqflite/sqflite.dart';
 
 class ScheduleForm extends StatefulWidget {
-  VoidCallback onUpdateList;
+  final VoidCallback onUpdateList;
   ScheduleForm({this.onUpdateList});
   _ScheduleState createState() => _ScheduleState(onUpdateList: onUpdateList);
 }
@@ -35,7 +35,7 @@ class _ScheduleState extends State<ScheduleForm> {
             onPressed: () => Navigator.pop(context),
           ),
           title: Text('Add Alarm'),
-          backgroundColor: Colors.orangeAccent,
+          backgroundColor: Colors.greenAccent[50],
           actions: <Widget>[
             IconButton(
               icon: Icon(Icons.check),

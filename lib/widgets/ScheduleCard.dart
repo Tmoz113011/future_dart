@@ -18,7 +18,7 @@ class _ScheduleCardState extends State<ScheduleCard> {
   Schedule schedule;
   _ScheduleCardState(this.schedule);
 
-  _onChangeAlarmStatus(bool value) async {
+  void _onChangeAlarmStatus(bool value) async {
     int isOn;
     if (value == true) {
       isOn = 1;
@@ -26,14 +26,22 @@ class _ScheduleCardState extends State<ScheduleCard> {
       isOn = 0;
     }
     schedule.isOn = isOn;
-    await updateOnOffAlarm(schedule);
+    final Database db = await DBHelper(
+            dbName: Schedule.dbName, createQuery: Schedule.onCreateQuery)
+        .db;
+
+    db.update(Schedule.tableName, schedule.toMap(),
+        where: "id = ?", whereArgs: [schedule.id]);
+    setState(() {
+      schedule = schedule;
+    });
   }
 
   Future<void> updateOnOffAlarm(Schedule _schedule) async {
     DBHelper database =
         DBHelper(dbName: Schedule.dbName, createQuery: Schedule.onCreateQuery);
     final Database db = await database.db;
-    if (schedule != null) {
+    if (_schedule != null) {
       db.update(Schedule.tableName, _schedule.toMap(),
           where: "id = ?", whereArgs: [_schedule.id]);
       setState(() {
@@ -47,9 +55,13 @@ class _ScheduleCardState extends State<ScheduleCard> {
     return InkWell(
       onTap: null,
       child: Container(
-        constraints: BoxConstraints.expand(height: 50),
+        constraints: BoxConstraints.expand(height: 60),
+        decoration: BoxDecoration(
+            border: Border(
+                bottom: BorderSide(width: 1.0, color: Color(0xFFFFDFDFDF)))),
+        padding: EdgeInsets.only(left: 20),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[timeText, alarmSwitch],
         ),
       ),
@@ -57,12 +69,18 @@ class _ScheduleCardState extends State<ScheduleCard> {
   }
 
   Widget get timeText {
-    return Text(schedule.time.format(context));
+    return Text(
+      schedule.time.format(context),
+      style: TextStyle(
+        fontFamily: 'Digital',
+        fontSize: 30
+      ),
+      );
   }
 
   Widget get alarmSwitch {
     return CupertinoSwitch(
         value: schedule.isOn == 1,
-        onChanged: (bool value) => _onChangeAlarmStatus(value));
+        onChanged: (bool value) async => _onChangeAlarmStatus(value));
   }
 }

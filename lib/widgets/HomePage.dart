@@ -1,11 +1,11 @@
 import 'dart:convert';
-
 import 'package:alarm_first_app/helpers/DBHelper.dart';
 import 'package:alarm_first_app/models/Schedule.dart';
 import 'package:alarm_first_app/widgets/CreateForm.dart';
 import 'package:alarm_first_app/widgets/ListSchedule.dart';
 import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
@@ -18,11 +18,13 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   List<Schedule> schedules = [];
+  final FlutterLocalNotificationsPlugin notifications = FlutterLocalNotificationsPlugin();
   
   @override
   void initState() {
     super.initState();
     setListAlarm();
+    setUpNotification();
   }
 
   void _onOpenCreateForm() {
@@ -35,6 +37,10 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(()  {
       schedules = _schedules;
     });
+  }
+
+  setUpNotification() {
+
   }
 
   Future<List<Schedule>> getListSchedule() async {
