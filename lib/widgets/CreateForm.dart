@@ -8,21 +8,22 @@ import 'package:sqflite/sqflite.dart';
 
 class ScheduleForm extends StatefulWidget {
   final VoidCallback onUpdateList;
-  ScheduleForm({this.onUpdateList});
-  _ScheduleState createState() => _ScheduleState(onUpdateList: onUpdateList);
+  final Schedule schedule;
+  final String title;
+  ScheduleForm({this.onUpdateList, this.schedule, this.title});
+  _ScheduleState createState() => _ScheduleState();
 }
 
 class _ScheduleState extends State<ScheduleForm> {
   DateTime timeStamp = DateTime.now();
-  final VoidCallback onUpdateList;
-  _ScheduleState({this.onUpdateList});
 
-  Future<void> createSchedule(Schedule schedule) async {
+  Future<void> createOrUpdateSchedule(Schedule schedule) async {
     DBHelper database =
         DBHelper(dbName: Schedule.dbName, createQuery: Schedule.onCreateQuery);
     final Database db = await database.db;
     if (schedule != null) {
-      db.insert(Schedule.tableName, schedule.toMap());
+      db.insert(Schedule.tableName, schedule.toMap(),
+          conflictAlgorithm: ConflictAlgorithm.replace);
     }
   }
 
@@ -34,20 +35,31 @@ class _ScheduleState extends State<ScheduleForm> {
             icon: Icon(Icons.arrow_back_ios),
             onPressed: () => Navigator.pop(context),
           ),
-          title: Text('Add Alarm'),
+          title: Text(widget.title),
           backgroundColor: Colors.greenAccent[50],
           actions: <Widget>[
             IconButton(
               icon: Icon(Icons.check),
               onPressed: () async {
-                Schedule schedule = Schedule(
-                    id: timeStamp.microsecondsSinceEpoch,
-                    time: TimeOfDay(
-                        hour: timeStamp.hour, minute: timeStamp.minute),
-                    isOn: 1,
-                    isDelete: 0);
-                await createSchedule(schedule);
-                onUpdateList();
+                TimeOfDay time =
+                    TimeOfDay(hour: timeStamp.hour, minute: timeStamp.minute);
+                Schedule schedule;
+                if (widget.schedule == null) {
+                  schedule = Schedule(
+                      id: timeStamp.microsecondsSinceEpoch,
+                      time: time,
+                      isOn: 1,
+                      isDelete: 0);
+                } else {
+                  schedule = Schedule(
+                      id: widget.schedule.id,
+                      time: time,
+                      isOn: widget.schedule.isOn,
+                      isDelete: widget.schedule.id);
+                }
+                await createOrUpdateSchedule(schedule);
+
+                widget.onUpdateList();
                 Navigator.pop(context);
               },
             )
@@ -56,7 +68,15 @@ class _ScheduleState extends State<ScheduleForm> {
         body: Container(
           child: CupertinoDatePicker(
             mode: CupertinoDatePickerMode.time,
-            initialDateTime: timeStamp,
+            initialDateTime: widget.schedule == null
+                ? timeStamp
+                : DateTime(
+                    DateTime.now().year,
+                    DateTime.now().month,
+                    DateTime.now().day,
+                    widget.schedule.time.hour,
+                    widget.schedule.time.minute
+                    ),
             onDateTimeChanged: (DateTime time) {
               setState(() {
                 timeStamp = time;

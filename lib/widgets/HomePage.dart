@@ -29,7 +29,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _onOpenCreateForm() {
     Navigator.push(
-        context, MaterialPageRoute(builder: (context) => ScheduleForm(onUpdateList: this.setListAlarm)));
+        context, MaterialPageRoute(builder: (context) => ScheduleForm(onUpdateList: this.setListAlarm, title: 'Create Form',)));
   }
 
   void setListAlarm() async {
@@ -75,7 +75,7 @@ class _MyHomePageState extends State<MyHomePage> {
         backgroundColor: Colors.greenAccent[50],
       ),
       body: Center(
-        child: ListSchedule(schedules:schedules),
+        child: ListSchedule(schedules:schedules, onUpdateList: this.setListAlarm),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _onOpenCreateForm,

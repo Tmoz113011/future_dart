@@ -29,6 +29,10 @@ class Schedule {
     time = val;
   }
 
+  set isDelete(int value) {
+    isDelete = value;
+  }
+
   Map<String, dynamic> toMap() {
     return {
       'id': id,
