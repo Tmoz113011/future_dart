@@ -5,11 +5,15 @@ import 'package:flutter/widgets.dart';
 import 'package:sqflite/sqflite.dart';
 import 'ScheduleCard.dart';
 
-class ListSchedule extends StatelessWidget {
-  final List<Schedule> schedules;
+class ListSchedule extends StatefulWidget {
+  List<Schedule> schedules;
   final VoidCallback onUpdateList;
   ListSchedule({this.schedules, this.onUpdateList});
+  @override
+  _ListScheduleState createState() => _ListScheduleState();
+}
 
+class _ListScheduleState extends State<ListSchedule> {
   Future<void> _onDeleteAlarm(Schedule schedule) async {
     final Database db = await DBHelper(
             dbName: Schedule.dbName, createQuery: Schedule.onCreateQuery)
@@ -17,29 +21,31 @@ class ListSchedule extends StatelessWidget {
 
     db.update(Schedule.tableName, schedule.toMap(),
         where: "id = ?", whereArgs: [schedule.id]);
-    this.onUpdateList();
+    widget.onUpdateList();
   }
 
   ListView _listAlarms(context) {
     return ListView.builder(
-      itemCount: schedules.length,
+      itemCount: widget.schedules.length,
       itemBuilder: (context, i) {
-        final item = schedules[i].id.toString();
+        final item = widget.schedules[i].id.toString();
         return Dismissible(
           onDismissed: (direction) {
             Schedule schedule = Schedule(
-              id: schedules[i].id,
-              time: schedules[i].time,
-              isOn: schedules[i].isOn,
-              isDelete: 1
-            );
-             _onDeleteAlarm(schedule);
+                id: widget.schedules[i].id,
+                time: widget.schedules[i].time,
+                isOn: widget.schedules[i].isOn,
+                isDelete: 1);
+            _onDeleteAlarm(schedule);
+            setState(() {
+              widget.schedules.removeAt(i);
+            });
           },
           key: Key(item),
           child: ScheduleCard(
-              schedule: schedules[i], onUpdateList: this.onUpdateList),
+              schedule: widget.schedules[i], onUpdateList: widget.onUpdateList),
           background: Container(
-            color: Colors.red,
+            color: Colors.red[200]
           ),
         );
       },

@@ -1,18 +1,24 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 
 class Schedule {
-  static final tableName = "schedules";
+  Schedule({this.id, this.time, this.isOn, this.isDelete});
+
   static final dbName = "schedule.db";
-  final int id;
-  final TimeOfDay time;
-  final int isOn;
-  final int isDelete;
   static final String onCreateQuery =
       "CREATE TABLE schedules(id INTEGER PRIMARY KEY, time TEXT, isOn INTEGER DEFAULT 1, isDelete INTEGER DEFAULT 0)";
 
-  Schedule({this.id, this.time, this.isOn, this.isDelete});
+  static final tableName = "schedules";
+
+  final int id;
+  final int isDelete;
+  final int isOn;
+  final TimeOfDay time;
+
+  @override
+  String toString() {
+    return "Schedule($id, $time, $isOn, $isDelete})";
+  }
 
   static Schedule defaultSchedule() {
     TimeOfDay time =
@@ -40,10 +46,5 @@ class Schedule {
       'isOn': isOn,
       'isDelete': isDelete
     };
-  }
-
-  @override
-  String toString() {
-    return "Schedule($id, $time, $isOn, $isDelete})";
   }
 }

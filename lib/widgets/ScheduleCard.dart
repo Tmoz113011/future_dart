@@ -42,20 +42,6 @@ class _ScheduleCardState extends State<ScheduleCard> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      constraints: BoxConstraints.expand(height: 60),
-      decoration: BoxDecoration(
-          border: Border(
-              bottom: BorderSide(width: 1.0, color: Color(0xFFFFDFDFDF)))),
-      padding: EdgeInsets.only(left: 20),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[timeText, alarmSwitch],
-      ),
-    );
-  }
-
-  Widget get timeText {
     return InkWell(
         onTap: () => Navigator.push(
             context,
@@ -65,10 +51,24 @@ class _ScheduleCardState extends State<ScheduleCard> {
                       title: "Update alarm",
                       onUpdateList: widget.onUpdateList,
                     ))),
-        child: Text(
-          widget.schedule.time.format(context),
-          style: TextStyle(fontFamily: 'Digital', fontSize: 30),
+        child: Container(
+          constraints: BoxConstraints.expand(height: 60),
+          decoration: BoxDecoration(
+              border: Border(
+                  bottom: BorderSide(width: 1.0, color: Color(0xFFFFDFDFDF)))),
+          padding: EdgeInsets.only(left: 20),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[timeText, alarmSwitch],
+          ),
         ));
+  }
+
+  Widget get timeText {
+    return Text(
+      widget.schedule.time.format(context),
+      style: TextStyle(fontFamily: 'Digital', fontSize: 30),
+    );
   }
 
   Widget get alarmSwitch {

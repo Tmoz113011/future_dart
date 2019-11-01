@@ -36,13 +36,12 @@ class _ScheduleState extends State<ScheduleForm> {
             onPressed: () => Navigator.pop(context),
           ),
           title: Text(widget.title),
-          backgroundColor: Colors.greenAccent[50],
+          backgroundColor: Colors.blue,
           actions: <Widget>[
             IconButton(
               icon: Icon(Icons.check),
               onPressed: () async {
-                TimeOfDay time =
-                    TimeOfDay(hour: timeStamp.hour, minute: timeStamp.minute);
+                TimeOfDay time = TimeOfDay.fromDateTime(timeStamp);
                 Schedule schedule;
                 if (widget.schedule == null) {
                   schedule = Schedule(
@@ -55,7 +54,7 @@ class _ScheduleState extends State<ScheduleForm> {
                       id: widget.schedule.id,
                       time: time,
                       isOn: widget.schedule.isOn,
-                      isDelete: widget.schedule.id);
+                      isDelete: widget.schedule.isDelete);
                 }
                 await createOrUpdateSchedule(schedule);
 
