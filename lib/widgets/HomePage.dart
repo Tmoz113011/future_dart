@@ -44,13 +44,34 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       schedules = _schedules;
     });
-    setUpNotification();
+  }
+
+  _dismissDialog() {
+    Navigator.pop(context);
+  }
+
+  Future _cancelNotification(
+      FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin) async {
+    await flutterLocalNotificationsPlugin.cancelAll();
   }
 
   Future _onSelectNotification(String payload) async {
-    // TODO: Implement later
-    // Navigator.push(
-    //     context, MaterialPageRoute(builder: (context) => MyHomePage(title: "home",)));
+    // https://coflutter.com/flutter-dart/how-to-show-dialog-in-flutter/
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text('Alarm!'),
+            content: Text("$payload"),
+            actions: <Widget>[
+              FlatButton(
+                  onPressed: () {
+                    _dismissDialog();
+                  },
+                  child: Text('Close')),
+            ],
+          );
+        });
   }
 
   setUpNotification() {
@@ -74,6 +95,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Future _showNotificationWithDefaultSound(
       FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin,
       List<Schedule> schedules) async {
+    this._cancelNotification(flutterLocalNotificationsPlugin);
     var vibrationPattern = new Int64List(4);
     vibrationPattern[0] = 0;
     vibrationPattern[1] = 1000;
@@ -104,14 +126,15 @@ class _MyHomePageState extends State<MyHomePage> {
             schedule.time.hour,
             schedule.time.minute);
 
-            // flutterLocalNotificationsPlugin.show(id, 'Wake Up!',  "Wake!! ${schedule.time.format(context)}", notificationDetails);
+        // flutterLocalNotificationsPlugin.show(id, 'Wake Up!',  "Wake!! ${schedule.time.format(context)}", notificationDetails);
         flutterLocalNotificationsPlugin.schedule(
             id,
             'Wake Up!',
             "Wake!! ${schedule.time.format(context)}",
             scheduleTime,
             notificationDetails,
-            androidAllowWhileIdle: true);
+            androidAllowWhileIdle: true,
+            payload: "Wake!! ${schedule.time.format(context)}");
       }
     });
   }
